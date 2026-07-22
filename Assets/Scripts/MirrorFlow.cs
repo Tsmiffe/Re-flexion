@@ -10,6 +10,9 @@ public class MirrorFlow : MonoBehaviour
     public GameObject prosConsPanel;
     public GameObject conclusionPanel;
 
+    public GameObject historyPanel;
+    public HistoryDisplay historyDisplay;
+
     [Header("Input Fields")]
     public TMP_InputField userInput;
     public TMP_InputField prosInput;
@@ -48,6 +51,8 @@ public class MirrorFlow : MonoBehaviour
             BuildConclusion();
         else if (conclusionPanel.activeSelf)
             StartOver();
+        else if (historyPanel.activeSelf)
+            HideHistoryPanel();
     }
 
     private void ResetAllPanels()
@@ -56,6 +61,7 @@ public class MirrorFlow : MonoBehaviour
         questionPanel.SetActive(false);
         prosConsPanel.SetActive(false);
         conclusionPanel.SetActive(false);
+        historyPanel.SetActive(false);
     }
 
     private void ClearAllFields()
@@ -64,14 +70,26 @@ public class MirrorFlow : MonoBehaviour
         prosInput.text = "";
         consInput.text = "";
         conclusionOutput.text = "";
-        if (prosConsHeader != null)
-            prosConsHeader.text = "";
+
+        // ⭐ DO NOT CLEAR prosConsHeader — this was deleting your instructions
     }
 
     public void BeginFlow()
     {
         titleScreenPanel.SetActive(false);
         questionPanel.SetActive(true);
+
+        // ⭐ Restore header instructions immediately
+        prosConsHeader.text =
+            "<align=\"center\"><b><size=150%>Your Thought:</size></b>\n" +
+            "<size=130%>(enter your thought above)</size></align>\n\n" +
+
+            "<align=\"left\">" +
+            "<b>Instructions:</b>\n" +
+            "• Add pros or cons\n" +
+            "• Paste multiple lines\n" +
+            "• Press Build when ready" +
+            "</align>";
     }
 
     public void SubmitMainThought()
@@ -185,5 +203,23 @@ public class MirrorFlow : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    public void ShowHistoryPanel()
+    {
+        titleScreenPanel.SetActive(false);
+        questionPanel.SetActive(false);
+        prosConsPanel.SetActive(false);
+        conclusionPanel.SetActive(false);
+
+        historyPanel.SetActive(true);
+
+        historyDisplay.RefreshHistory();
+    }
+
+    public void HideHistoryPanel()
+    {
+        historyPanel.SetActive(false);
+        titleScreenPanel.SetActive(true);
     }
 }

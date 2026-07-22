@@ -8,15 +8,23 @@ public class UIController : MonoBehaviour
     public GameObject proConGroup;
     public GameObject conclusionGroup;
 
+    // ⭐ NEW: History panel
+    public GameObject historyPanel;
+    public HistoryDisplay historyDisplay;
+
     private ScreenFader fader;
 
     void Start()
     {
-        fader = FindObjectOfType<ScreenFader>();
+        fader = FindFirstObjectByType<ScreenFader>();
 
         if (fader == null)
             Debug.LogError("UIController: No ScreenFader found in scene.");
     }
+
+    // -------------------------
+    // EXISTING FLOW (unchanged)
+    // -------------------------
 
     public void GoToQuestion()
     {
@@ -36,9 +44,26 @@ public class UIController : MonoBehaviour
             fader.FadeToUI(proConGroup, conclusionGroup);
     }
 
-    // ⭐ FIX: Remove fade when restarting → prevents double fade
     public void GoBackToTitle()
     {
-        SceneManager.LoadScene("TitleScene");   // instant load, no fade
+        SceneManager.LoadScene("TitleScene");
+    }
+
+    // -------------------------
+    // ⭐ NEW: HISTORY NAVIGATION
+    // -------------------------
+
+    public void ShowHistory()
+    {
+        titleGroup.SetActive(false);
+        historyPanel.SetActive(true);
+
+        historyDisplay.RefreshHistory();
+    }
+
+    public void ShowTitleScreen()
+    {
+        historyPanel.SetActive(false);
+        titleGroup.SetActive(true);
     }
 }
