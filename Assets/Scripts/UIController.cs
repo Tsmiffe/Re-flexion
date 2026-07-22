@@ -3,67 +3,69 @@ using UnityEngine.SceneManagement;
 
 public class UIController : MonoBehaviour
 {
-    public GameObject titleGroup;
-    public GameObject questionGroup;
-    public GameObject proConGroup;
-    public GameObject conclusionGroup;
+    public static UIController Instance;
 
-    // ⭐ NEW: History panel
+    public GameObject titlePanel;
+    public GameObject questionPanel;
+    public GameObject prosConsPanel;
+    public GameObject conclusionPanel;
+
     public GameObject historyPanel;
     public HistoryDisplay historyDisplay;
 
+    public MirrorFlow mirrorFlow;
+
     private ScreenFader fader;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
         fader = FindFirstObjectByType<ScreenFader>();
 
-        if (fader == null)
-            Debug.LogError("UIController: No ScreenFader found in scene.");
+        titlePanel.SetActive(true);
+        questionPanel.SetActive(false);
+        prosConsPanel.SetActive(false);
+        conclusionPanel.SetActive(false);
+        historyPanel.SetActive(false);
     }
-
-    // -------------------------
-    // EXISTING FLOW (unchanged)
-    // -------------------------
 
     public void GoToQuestion()
     {
-        if (fader != null)
-            fader.FadeToUI(titleGroup, questionGroup);
+        mirrorFlow.BeginFlow();
+        fader.FadeToUI(titlePanel, questionPanel);
     }
 
     public void GoToProCon()
     {
-        if (fader != null)
-            fader.FadeToUI(questionGroup, proConGroup);
+
+        fader.FadeToUI(questionPanel, prosConsPanel);
     }
 
     public void GoToConclusion()
     {
-        if (fader != null)
-            fader.FadeToUI(proConGroup, conclusionGroup);
+        fader.FadeToUI(prosConsPanel, conclusionPanel);
     }
 
     public void GoBackToTitle()
     {
+        mirrorFlow.StartOver();
         SceneManager.LoadScene("TitleScene");
     }
 
-    // -------------------------
-    // ⭐ NEW: HISTORY NAVIGATION
-    // -------------------------
-
     public void ShowHistory()
     {
-        titleGroup.SetActive(false);
+        titlePanel.SetActive(false);
         historyPanel.SetActive(true);
-
         historyDisplay.RefreshHistory();
     }
 
     public void ShowTitleScreen()
     {
         historyPanel.SetActive(false);
-        titleGroup.SetActive(true);
+        titlePanel.SetActive(true);
     }
 }

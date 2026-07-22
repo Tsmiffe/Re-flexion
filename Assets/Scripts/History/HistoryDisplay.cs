@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 
 public class HistoryDisplay : MonoBehaviour
@@ -20,19 +20,17 @@ public class HistoryDisplay : MonoBehaviour
 
             TMP_Text text = obj.GetComponentInChildren<TMP_Text>();
 
-            text.text =
-                $"Reflection: {entry.reflectionText}\n" +
-                $"Pros: {entry.pros}\n" +
-                $"Cons: {entry.cons}\n" +
-                $"Decision: {entry.finalDecision}\n" +
-                $"Summary: {entry.summaryTable}\n" +
-                $"Time: {entry.timestamp}";
+            // ⭐ Add spacing between entries
+            text.text = entry.summaryTable + "\n\n";
+
+            // OPTIONAL: Add a separator line
+            // text.text += "<color=#888888>──────────────────────────────</color>\n\n";
         }
     }
 
     public void ClearAllHistory()
     {
-        historyManager.ClearHistory();   // wipe file + memory
-        RefreshHistory();                // wipe UI + reload empty
+        historyManager.ClearHistory();
+        RefreshHistory();
     }
 }

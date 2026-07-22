@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class MirrorFlow : MonoBehaviour
 {
     [Header("Panels")]
-    public GameObject titleScreenPanel;
+    public GameObject titlePanel;
     public GameObject questionPanel;
     public GameObject prosConsPanel;
     public GameObject conclusionPanel;
-
     public GameObject historyPanel;
+
     public HistoryDisplay historyDisplay;
 
     [Header("Input Fields")]
@@ -28,40 +28,7 @@ public class MirrorFlow : MonoBehaviour
 
     void Start()
     {
-        ResetAllPanels();
-        ClearAllFields();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            HandleEnterKey();
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-            QuitApp();
-    }
-
-    private void HandleEnterKey()
-    {
-        if (titleScreenPanel.activeSelf)
-            BeginFlow();
-        else if (questionPanel.activeSelf)
-            SubmitMainThought();
-        else if (prosConsPanel.activeSelf)
-            BuildConclusion();
-        else if (conclusionPanel.activeSelf)
-            StartOver();
-        else if (historyPanel.activeSelf)
-            HideHistoryPanel();
-    }
-
-    private void ResetAllPanels()
-    {
-        titleScreenPanel.SetActive(true);
-        questionPanel.SetActive(false);
-        prosConsPanel.SetActive(false);
-        conclusionPanel.SetActive(false);
-        historyPanel.SetActive(false);
+        // UIController handles panel activation
     }
 
     private void ClearAllFields()
@@ -70,32 +37,35 @@ public class MirrorFlow : MonoBehaviour
         prosInput.text = "";
         consInput.text = "";
         conclusionOutput.text = "";
-
-        // ⭐ DO NOT CLEAR prosConsHeader — this was deleting your instructions
     }
 
+    // TITLE → QUESTION
     public void BeginFlow()
     {
-        titleScreenPanel.SetActive(false);
-        questionPanel.SetActive(true);
-
-        // ⭐ Restore header instructions immediately
         prosConsHeader.text =
-            "<align=\"center\"><b><size=150%>Your Thought:</size></b>\n" +
-            "<size=130%>(enter your thought above)</size></align>\n\n" +
-
             "<align=\"left\">" +
             "<b>Instructions:</b>\n" +
             "• Add pros or cons\n" +
             "• Paste multiple lines\n" +
-            "• Press Build when ready" +
+            "• Press Enter to continue" +
             "</align>";
     }
 
+    // QUESTION → PRO/CON (EnterKeyController calls this)
     public void SubmitMainThought()
     {
+        // Force TMP to commit whatever is typed
         userInput.DeactivateInputField();
-        mainThought = userInput.text.Trim();
+        userInput.ForceLabelUpdate();
+
+        string rawInput = userInput.textComponent != null
+            ? userInput.textComponent.text
+            : userInput.text;
+
+        Debug.Log("RAW INPUT = '" + rawInput + "'");
+
+        mainThought = rawInput.Trim();
+        Debug.Log("MAIN THOUGHT READ = '" + mainThought + "'");
 
         if (string.IsNullOrWhiteSpace(mainThought))
             return;
@@ -103,21 +73,23 @@ public class MirrorFlow : MonoBehaviour
         prosConsHeader.text =
             "<align=\"center\"><b><size=150%>Your Thought:</size></b>\n" +
             $"<size=130%>{mainThought}</size></align>\n\n" +
-
             "<align=\"left\">" +
             "<b>Instructions:</b>\n" +
             "• Add pros or cons\n" +
             "• Paste multiple lines\n" +
-            "• Press Build when ready" +
+            "• Press Enter to continue" +
             "</align>";
-
-        questionPanel.SetActive(false);
-        prosConsPanel.SetActive(true);
     }
 
     public void AddPro()
     {
-        string p = prosInput.text.Trim();
+        prosInput.DeactivateInputField();
+        prosInput.ForceLabelUpdate();
+
+        string p = prosInput.textComponent != null
+            ? prosInput.textComponent.text.Trim()
+            : prosInput.text.Trim();
+
         if (p.Length > 0)
         {
             prosList.Add(p);
@@ -127,7 +99,13 @@ public class MirrorFlow : MonoBehaviour
 
     public void AddCon()
     {
-        string c = consInput.text.Trim();
+        consInput.DeactivateInputField();
+        consInput.ForceLabelUpdate();
+
+        string c = consInput.textComponent != null
+            ? consInput.textComponent.text.Trim()
+            : consInput.text.Trim();
+
         if (c.Length > 0)
         {
             consList.Add(c);
@@ -143,47 +121,34 @@ public class MirrorFlow : MonoBehaviour
         return sb.ToString();
     }
 
+    // PRO/CON → CONCLUSION
     public void BuildConclusion()
     {
-        AddRemainingLines(prosInput, prosList);
-        AddRemainingLines(consInput, consList);
+        Debug.Log("BUILD CONCLUSION MAIN THOUGHT = '" + mainThought + "'");
 
         string today = System.DateTime.Now.ToString("MMMM dd, yyyy");
 
         conclusionOutput.text =
             "<align=\"center\"><b><size=160%><color=#D0C7B8>Your Thought</color></size></b>\n" +
             $"<size=130%>{mainThought}</size></align>\n\n" +
-
             "<b><size=140%><color=#D0C7B8>Date</color></size></b>\n" +
             today + "\n\n" +
-
             "<b><size=140%><color=#A8D5BA>Pros</color></size></b>\n" +
             BuildSoftList(prosList, "#A8D5BA") + "\n" +
-
             "<b><size=140%><color=#E6AFAF>Cons</color></size></b>\n" +
             BuildSoftList(consList, "#E6AFAF") + "\n" +
-
             "<align=\"center\"><b><size=150%><color=#D0C7B8>What reflection do you see?</color></size></b></align>";
 
-        prosConsPanel.SetActive(false);
-        conclusionPanel.SetActive(true);
-    }
+        string prosCombined = string.Join("\n", prosList);
+        string consCombined = string.Join("\n", consList);
 
-    private void AddRemainingLines(TMP_InputField input, List<string> list)
-    {
-        string raw = input.text.Trim();
-        if (raw.Length == 0)
-            return;
-
-        string[] lines = raw.Split('\n');
-        foreach (string line in lines)
-        {
-            string trimmed = line.Trim();
-            if (trimmed.Length > 0)
-                list.Add(trimmed);
-        }
-
-        input.text = "";
+        historyDisplay.historyManager.AddReflection(
+            mainThought,
+            prosCombined,
+            consCombined,
+            "",
+            conclusionOutput.text
+        );
     }
 
     public void StartOver()
@@ -191,35 +156,6 @@ public class MirrorFlow : MonoBehaviour
         mainThought = "";
         prosList.Clear();
         consList.Clear();
-
         ClearAllFields();
-        ResetAllPanels();
-    }
-
-    public void QuitApp()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-    }
-
-    public void ShowHistoryPanel()
-    {
-        titleScreenPanel.SetActive(false);
-        questionPanel.SetActive(false);
-        prosConsPanel.SetActive(false);
-        conclusionPanel.SetActive(false);
-
-        historyPanel.SetActive(true);
-
-        historyDisplay.RefreshHistory();
-    }
-
-    public void HideHistoryPanel()
-    {
-        historyPanel.SetActive(false);
-        titleScreenPanel.SetActive(true);
     }
 }

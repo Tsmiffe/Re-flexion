@@ -199,7 +199,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -200, y: -30}
+  m_AnchoredPosition: {x: -100, y: -30}
   m_SizeDelta: {x: 200, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &66563820
@@ -768,7 +768,7 @@ MonoBehaviour:
     Version:
     1.0.0
 
-    Updated: 7/15/2026'
+    Updated: 7/22/2026'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -1035,7 +1035,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000053747422}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1413978040
@@ -1470,8 +1470,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1600690900}
   m_HandleRect: {fileID: 1600690899}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.9999967
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2091,7 +2091,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 7fdb42e1c86af0d43b74776586165439, type: 3}
 --- !u!224 &1842868356 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3607951305875954937, guid: 7fdb42e1c86af0d43b74776586165439, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8794846203512432192, guid: 7fdb42e1c86af0d43b74776586165439, type: 3}
   m_PrefabInstance: {fileID: 1842868355}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1868267338
@@ -2176,7 +2176,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 226817798}
   m_HandleRect: {fileID: 226817797}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
