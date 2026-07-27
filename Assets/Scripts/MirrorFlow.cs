@@ -54,13 +54,11 @@ public class MirrorFlow : MonoBehaviour
     // QUESTION → PRO/CON (EnterKeyController calls this)
     public void SubmitMainThought()
     {
-        // Force TMP to commit whatever is typed
         userInput.DeactivateInputField();
         userInput.ForceLabelUpdate();
 
-        string rawInput = userInput.textComponent != null
-            ? userInput.textComponent.text
-            : userInput.text;
+        // ⭐ Correct way to read TMP input
+        string rawInput = userInput.text;
 
         Debug.Log("RAW INPUT = '" + rawInput + "'");
 
@@ -80,6 +78,7 @@ public class MirrorFlow : MonoBehaviour
             "• Press Enter to continue" +
             "</align>";
     }
+
 
     public void AddPro()
     {

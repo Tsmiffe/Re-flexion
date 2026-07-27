@@ -33,6 +33,18 @@ public class UIController : MonoBehaviour
         historyPanel.SetActive(false);
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+        }
+    }
+
     public void GoToQuestion()
     {
         mirrorFlow.BeginFlow();
