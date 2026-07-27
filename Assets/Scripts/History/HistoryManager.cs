@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Text;
+using TMPro;
 using UnityEngine;
 
 public class HistoryManager : MonoBehaviour
 {
     private string filePath;
     public ReflectionHistory history;
+    public TMP_Text exportPathText;
 
     void Awake()
     {
@@ -104,7 +106,31 @@ public class HistoryManager : MonoBehaviour
         string exportPath = Path.Combine(Application.persistentDataPath, "Re-flexion_Export.txt");
 
         string formatted = BuildFullHistoryText();
-
         File.WriteAllText(exportPath, formatted);
+
+        Debug.Log("History exported to: " + exportPath);
+
+        // Show the path in the UI
+        if (exportPathText != null)
+            exportPathText.text = "Export saved to:\n" + exportPath;
+
+#if UNITY_STANDALONE || UNITY_EDITOR
+        // Open the folder (always works)
+        var psi = new System.Diagnostics.ProcessStartInfo()
+        {
+            FileName = Application.persistentDataPath,
+            UseShellExecute = true,
+            Verb = "open"
+        };
+        System.Diagnostics.Process.Start(psi);
+
+#elif UNITY_ANDROID || UNITY_IOS
+    // Mobile: open the file with the default viewer
+    Application.OpenURL("file://" + exportPath);
+#endif
     }
+
+
+
+
 }
