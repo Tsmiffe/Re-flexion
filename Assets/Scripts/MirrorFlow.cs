@@ -22,13 +22,23 @@ public class MirrorFlow : MonoBehaviour
     public TextMeshProUGUI prosConsHeader;
     public TextMeshProUGUI conclusionOutput;
 
+    [Header("Character Limit Warning")]
+    public TMP_Text warningText;
+
     private string mainThought = "";
     private readonly List<string> prosList = new();
     private readonly List<string> consList = new();
 
     void Start()
     {
-        // UIController handles panel activation
+        if (warningText != null)
+            warningText.enabled = false;
+    }
+
+    public void OnQuestionChanged()
+    {
+        if (warningText == null) return;
+        warningText.enabled = userInput.text.Length >= 200;
     }
 
     private void ClearAllFields()
@@ -37,9 +47,11 @@ public class MirrorFlow : MonoBehaviour
         prosInput.text = "";
         consInput.text = "";
         conclusionOutput.text = "";
+
+        if (warningText != null)
+            warningText.enabled = false;
     }
 
-    // TITLE → QUESTION
     public void BeginFlow()
     {
         prosConsHeader.text =
@@ -51,19 +63,13 @@ public class MirrorFlow : MonoBehaviour
             "</align>";
     }
 
-    // QUESTION → PRO/CON (EnterKeyController calls this)
     public void SubmitMainThought()
     {
         userInput.DeactivateInputField();
         userInput.ForceLabelUpdate();
 
-        // ⭐ Correct way to read TMP input
         string rawInput = userInput.text;
-
-        Debug.Log("RAW INPUT = '" + rawInput + "'");
-
         mainThought = rawInput.Trim();
-        Debug.Log("MAIN THOUGHT READ = '" + mainThought + "'");
 
         if (string.IsNullOrWhiteSpace(mainThought))
             return;
@@ -78,7 +84,6 @@ public class MirrorFlow : MonoBehaviour
             "• Press Enter to continue" +
             "</align>";
     }
-
 
     public void AddPro()
     {
@@ -120,11 +125,8 @@ public class MirrorFlow : MonoBehaviour
         return sb.ToString();
     }
 
-    // PRO/CON → CONCLUSION
     public void BuildConclusion()
     {
-        Debug.Log("BUILD CONCLUSION MAIN THOUGHT = '" + mainThought + "'");
-
         string today = System.DateTime.Now.ToString("MMMM dd, yyyy");
 
         conclusionOutput.text =
@@ -156,5 +158,9 @@ public class MirrorFlow : MonoBehaviour
         prosList.Clear();
         consList.Clear();
         ClearAllFields();
+
+
+        // ⭐ Reset UI panels properly
+        UIController.Instance.ShowTitleScreen();
     }
 }
